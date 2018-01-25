@@ -1,0 +1,59 @@
+{
+  "status": 200,
+  "msg": "OK",
+  "data": [{
+    "sort1": {
+      "sortId": "1",
+      "lv": 1,
+      "parent": null,
+      "name": "java"
+    },
+    "sort2s": [{
+      "sortId": "11",
+      "lv": 2,
+      "parent": "1",
+      "name": "多线程"
+    }, {
+      "sortId": "12",
+      "lv": 2,
+      "parent": "1",
+      "name": "高并发"
+    }]
+  }, {
+    "sort1": {
+      "sortId": "2",
+      "lv": 1,
+      "parent": null,
+      "name": "js"
+    },
+    "sort2s": [{
+      "sortId": "21",
+      "lv": 2,
+      "parent": "2",
+      "name": "函数原型"
+    }]
+  }, {
+    "sort1": {
+      "sortId": "3",
+      "lv": 1,
+      "parent": null,
+      "name": "二次元"
+    },
+    "sort2s": [{
+      "sortId": "31",
+      "lv": 2,
+      "parent": "3",
+      "name": "动漫"
+    }, {
+      "sortId": "32",
+      "lv": 2,
+      "parent": "3",
+      "name": "漫画"
+    }, {
+      "sortId": "33",
+      "lv": 2,
+      "parent": "3",
+      "name": "手办"
+    }]
+  }]
+}
