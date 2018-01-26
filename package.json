@@ -24,9 +24,11 @@
     "jquery": "^3.3.0",
     "react": "15.x",
     "react-dom": "15.x",
+    "react-mde": "^2.3.2",
     "react-redux": "^5.0.6",
     "react-router": "^3.0.0",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "showdown": "^1.8.1"
   },
   "devDependencies": {
     "babel-core": "6.x",

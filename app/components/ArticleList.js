@@ -7,40 +7,93 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
+import Page from  './Page.js'
 import {Link,IndexLink } from 'react-router';
-//
 
-export default class ArticleList extends React.Component {
+export default class ArticleListPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {articles: []};
+    this.state = {
+      articles: [],
+      pageSize:4,
+      pageNum:1,
+      articleAmount:0
+    };
   }
 
+//总共有多少条数据，本页的数据
   componentDidMount() {
-    var url = "http://localhost:8080/api/article/" + this.props.params.lv + "/" + this.props.params.sort;
-    this.getArticleList(url);
+    //let url1 = "http://localhost:8080/api/article/" + this.props.params.lv + "/" +
+    //  this.props.params.sort+"?pageNum="+this.state.pageNum+"&pageSize="+this.state.pageSize;
+    //let url2 =  "http://localhost:8080/api/articleAmount/" + this.props.params.lv + "/" + this.props.params.sort;
+    this.getArticleList();
+    this.getArticleAmount();
   }
-  getArticleList(url){
-    $.get(url, (result)=> {
+
+  getArticleList=()=> {
+    let url1 = "http://localhost:8080/api/article/" + this.props.params.lv + "/" +
+      this.props.params.sort+"?pageNum="+this.state.pageNum+"&pageSize="+this.state.pageSize;
+    $.get(url1, (result)=> {
         if (result.status == 200) {
-          console.log(result);
           this.setState({
             articles: result.data
           })
         }
       }
     )
-  }
+  };
+  getArticleAmount=()=> {
+    let url2 =  "http://localhost:8080/api/articleAmount/" + this.props.params.lv + "/" + this.props.params.sort;
+    $.get(url2, (result)=> {
+        if (result.status == 200) {
+          this.setState({
+            articleAmount: result.data
+          })
+
+        }
+      }
+    )
+  };
+
   componentWillReceiveProps(nextProps) {
-    var url = "http://localhost:8080/api/article/" + nextProps.routeParams.lv + "/" + nextProps.routeParams.sort;
+    let url = "http://localhost:8080/api/article/" + nextProps.routeParams.lv + "/" + nextProps.routeParams.sort+"?pageNum="+this.state.pageNum+"&pageSize="+this.state.pageSize;
     this.getArticleList(url);
   }
+
+  handlePageChange=(page)=>{//获得点击的页码，将其设置进状态
+
+    let url3 = "http://localhost:8080/api/article/" + this.props.params.lv + "/" +
+      this.props.params.sort+"?pageNum="+page+"&pageSize="+this.state.pageSize;
+    $.get(url3, (result)=> {
+        if (result.status == 200) {
+          this.setState({
+            articles: result.data,
+            pageNum: page
+          });
+
+        }
+      }
+    )
+
+  };
+  render() {
+    return (
+      <div>
+        <ArticleList articles = {this.state.articles}/>
+        <Page pageSize={this.state.pageSize} pageNum={this.state.pageNum} articleAmount={this.state.articleAmount} handlePageChange={this.handlePageChange}/>
+      </div>
+    )
+  }
+}
+
+class ArticleList extends React.Component {
+
 
   render() {
     return (
       <div className="column">
         {
-          this.state.articles.map((article)=> {
+          this.props.articles.map((article)=> {
             return (
               <div className="box" key={article.articleId}>
                 <Link to={"/article/"+article.articleId}>
@@ -72,7 +125,6 @@ export default class ArticleList extends React.Component {
     );
   }
 }
-
 
 
 

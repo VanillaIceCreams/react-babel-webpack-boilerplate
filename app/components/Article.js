@@ -12,29 +12,30 @@ export default class Article extends React.Component {
     super(props);
     this.state = {reviewList: []};
   }
+
   getReviewUrl = "http://localhost:8080/api/review/" + this.props.params.articleId;
   putReviewUrl = "http://localhost:8080/api/review";
 
-  putReview=(review,reviewForm)=>{//reviewForm是组件对象，用于提交成功后清空输入内容！
-    review.articleId=this.props.params.articleId;
+  putReview = (review, reviewForm)=> {//reviewForm是组件对象，用于提交成功后清空输入内容！
+    review.articleId = this.props.params.articleId;
     let url = "http://localhost:8080/api/review";
     $.ajax({
       type: 'put',
-      contentType:'application/json;charset=UTF-8',
-      dataType:"json",
+      contentType: 'application/json;charset=UTF-8',
+      dataType: "json",
       url: this.putReviewUrl,
       data: JSON.stringify(review),//必须是json格式！
-      success: (data)=>{
+      success: (result)=> {
         alert("评论成功");
         this.getReviewList(this.getReviewUrl)
-        console.log(reviewForm)
         reviewForm.cleatInput();
       },
-      error: (data)=>{
+      error: (result)=> {
         alert("服务器出错");
       }
     });
   };
+
   getReviewList(url) {
     $.get(url, (result)=> {
         if (result.status == 200) {
@@ -63,9 +64,9 @@ export default class Article extends React.Component {
 class Markdown extends React.Component {
 
   componentDidMount() {
-    console.log(this.props.articleId);
-    $.get("http://localhost:8081/test/test.md", (result)=> {
-        $(".markdown-body").html(result);
+    //console.log(this.props.articleId);
+    $.get("http://localhost:8080/api/article/" + this.props.articleId, (result)=> {
+        $(".markdown-body").html(result.data.content);
       }
     )
   }
@@ -119,27 +120,28 @@ class ReviewList extends React.Component {
 }
 class ReviewForm extends React.Component {
 
-  handleClick=()=>{
-    let review={
-      name:this.refs.name.value,
-      email:this.refs.email.value,
-      content:this.refs.content.value
+  handleClick = ()=> {
+    let review = {
+      name: this.refs.name.value,
+      email: this.refs.email.value,
+      content: this.refs.content.value
     };
-    this.props.putReview(review,this);
-   // this.cleatInput();
+    this.props.putReview(review, this);
+    // this.cleatInput();
   };
-  cleatInput=()=>{//清空输入内容
-    this.refs.name.value='';
-    this.refs.email.value='';
-    this.refs.content.value='';
+  cleatInput = ()=> {//清空输入内容
+    this.refs.name.value = '';
+    this.refs.email.value = '';
+    this.refs.content.value = '';
   };
+
   render() {
     return (
       <div>
         <div className="field">
           <label className="label">姓名</label>
           <div className="control">
-            <input className="input" type="text" placeholder="name" ref="name" />
+            <input className="input" type="text" placeholder="name" ref="name"/>
           </div>
           <label className="label">邮箱</label>
           <div className="control">
@@ -168,15 +170,16 @@ class ReviewForm extends React.Component {
   }
 }
 class GotoTop extends React.Component {
-  smoothscroll=()=>{
-  var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
-  if (currentScroll > 0) {
-    window.requestAnimationFrame(this.smoothscroll);
-    window.scrollTo (0,currentScroll - (currentScroll/5));
+  smoothscroll = ()=> {
+    var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+    if (currentScroll > 0) {
+      window.requestAnimationFrame(this.smoothscroll);
+      window.scrollTo(0, currentScroll - (currentScroll / 5));
+    }
   }
-}
+
   render() {
-    return <div  id="GotoTop" onClick={this.smoothscroll}>
+    return <div id="GotoTop" onClick={this.smoothscroll}>
       <i className="fa fa-arrow-up"/>
     </div>
   }

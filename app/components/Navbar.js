@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import {Link,IndexLink } from 'react-router';
+import LoginItem from './LoginItem'
 
 
 //let url = "http://localhost:8081/test/sort.json";
@@ -11,8 +12,10 @@ export default class Navbar extends React.Component {
     this.state = {listSortList: []};
   }
 
+  getSortList = "http://localhost:8080/api/sort";
+
   componentDidMount() {
-    $.get("http://localhost:8081/test/sort.json", (result)=> {
+    $.get(this.getSortList, (result)=> {
         if (result.status == 200) {
           this.setState({
             listSortList: result.data
@@ -25,11 +28,11 @@ export default class Navbar extends React.Component {
   render() {
     return (
       <div>
-        <nav className="navbar is-fixed-top ">
+        <nav className="navbar is-fixed-top is-dark">
           <div className="navbar-brand">
-            <a className="navbar-item" href="https://bulma.io">
-              <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28"/>
-            </a>
+            <IndexLink className="navbar-item is-size-5" to="/">
+              <span>香草的博客</span>
+            </IndexLink>
             <div className="navbar-burger burger" data-target="fuck">
               <span></span>
               <span></span>
@@ -37,7 +40,7 @@ export default class Navbar extends React.Component {
             </div>
           </div>
 
-          <div id="fuck" className="navbar-menu">
+          <div id="fuck" className="navbar-menu " style={{paddingRight: "30px"}}>
             <div className="navbar-start">
               <IndexLink to="/" className="navbar-item">
                 Home
@@ -48,7 +51,7 @@ export default class Navbar extends React.Component {
                   <Link className="navbar-link" to={url1}>
                     {data.sort1.name}
                   </Link>
-                  <div className="navbar-dropdown is-boxed">
+                  <div className="navbar-dropdown is-boxed ">
                     {data.sort2s.map((sort2)=> {
                       let url2 = "/article/two/" + sort2.sortId;
                       return <Link className="navbar-item" to={url2} key={sort2.sortId}>
@@ -59,28 +62,21 @@ export default class Navbar extends React.Component {
                 </div>
               })}
             </div>
-
             <div className="navbar-end">
-              <div className="navbar-item">
-                <div className="field is-grouped">
-                  <p className="control">
-                    <a className="button is-primary" href="">
-                      <span className="icon">
-                        <i className="fas fa-download"/>
-                      </span>
-                      <span>登录</span>
-                    </a>
-                  </p>
-                </div>
-              </div>
+              {/* 登录开始 */}
+              <LoginItem/>
+              {/* 登录结束 */}
             </div>
           </div>
         </nav>
+        {/* 内容体开始 */}
         <div className="container " style={{marginTop:"50px"}}>
           <div className="notification is-white">
             {this.props.children}
           </div>
         </div>
+        {/* 内容体结束*/}
+
       </div>
     );
   }

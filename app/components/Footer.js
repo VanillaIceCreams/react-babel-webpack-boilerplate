@@ -14,9 +14,7 @@ export default class Footer extends React.Component {
       <div className="container">
         <div className="content has-text-centered">
           <p>
-            <strong>Bulma</strong> by <a href="https://jgthms.com">Jeremy Thomas</a>. The source code is licensed
-            <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
-        is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+            <strong>Bulma</strong> is <a href="https://jgthms.com">a framework</a> which only depend on css
           </p>
         </div>
       </div>
