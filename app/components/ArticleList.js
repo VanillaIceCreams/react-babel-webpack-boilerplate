@@ -15,72 +15,91 @@ export default class ArticleListPage extends React.Component {
     super(props);
     this.state = {
       articles: [],
-      pageSize:4,
-      pageNum:1,
-      articleAmount:0
+      //以下状态传递给分页组件，使其发生变化（可尝试移出state外使用）
+      pageSize: 4,
+      pageNum: 1,
+      articleAmount: 0
     };
   }
 
-//总共有多少条数据，本页的数据
+  /**
+   * URL1:分页获取当前分类的文章列表
+   * URL2:获取当前分类的文章总数
+   */
   componentDidMount() {
-    //let url1 = "http://localhost:8080/api/article/" + this.props.params.lv + "/" +
-    //  this.props.params.sort+"?pageNum="+this.state.pageNum+"&pageSize="+this.state.pageSize;
-    //let url2 =  "http://localhost:8080/api/articleAmount/" + this.props.params.lv + "/" + this.props.params.sort;
-    this.getArticleList();
-    this.getArticleAmount();
+    let url1 = "http://localhost:8080/api/article/" + this.props.params.lv + "/" +
+      this.props.params.sort + "?pageNum=" + this.state.pageNum + "&pageSize=" + this.state.pageSize;
+    let url2 = "http://localhost:8080/api/articleAmount/" + this.props.params.lv + "/" + this.props.params.sort;
+    this.getArticleList(url1);
+    this.getArticleAmount(url2);
   }
 
-  getArticleList=()=> {
-    let url1 = "http://localhost:8080/api/article/" + this.props.params.lv + "/" +
-      this.props.params.sort+"?pageNum="+this.state.pageNum+"&pageSize="+this.state.pageSize;
-    $.get(url1, (result)=> {
+  /**
+   * 获取文章列表的信息
+   * @param url
+   */
+  getArticleList = (url)=> {
+    $.get(url, (result)=> {
         if (result.status == 200) {
           this.setState({
-            articles: result.data
-          })
+            articles: result.data,
+            pageNum:1
+          });
         }
       }
     )
   };
-  getArticleAmount=()=> {
-    let url2 =  "http://localhost:8080/api/articleAmount/" + this.props.params.lv + "/" + this.props.params.sort;
-    $.get(url2, (result)=> {
+  /**
+   * 获取文章总数
+   * @param url
+   */
+  getArticleAmount = (url)=> {
+    $.get(url, (result)=> {
         if (result.status == 200) {
           this.setState({
             articleAmount: result.data
           })
-
         }
       }
     )
   };
 
+  /**
+   * 组件参数发生变更时候调用（本处用于url参数变更时，请求新的文章信息）
+   * @param nextProps
+   */
   componentWillReceiveProps(nextProps) {
-    let url = "http://localhost:8080/api/article/" + nextProps.routeParams.lv + "/" + nextProps.routeParams.sort+"?pageNum="+this.state.pageNum+"&pageSize="+this.state.pageSize;
-    this.getArticleList(url);
+    let url1 = "http://localhost:8080/api/article/" + nextProps.routeParams.lv + "/" + nextProps.routeParams.sort + "?pageNum=" + this.state.pageNum + "&pageSize=" + this.state.pageSize;
+    let url2 = "http://localhost:8080/api/articleAmount/" + nextProps.routeParams.lv + "/" + nextProps.routeParams.sort;
+    this.getArticleList(url1);
+    this.getArticleAmount(url2);
   }
 
-  handlePageChange=(page)=>{//获得点击的页码，将其设置进状态
-
+  /**
+   * 获得点击的页码，向后台查询新数据，并将其设置进状态
+   * 本方法传递给子组件
+   * @param page 子组件传递上来
+   */
+  handlePageChange = (page)=> {
     let url3 = "http://localhost:8080/api/article/" + this.props.params.lv + "/" +
-      this.props.params.sort+"?pageNum="+page+"&pageSize="+this.state.pageSize;
+      this.props.params.sort + "?pageNum=" + page + "&pageSize=" + this.state.pageSize;
     $.get(url3, (result)=> {
         if (result.status == 200) {
           this.setState({
             articles: result.data,
             pageNum: page
           });
-
         }
       }
     )
-
   };
+
   render() {
     return (
       <div>
-        <ArticleList articles = {this.state.articles}/>
-        <Page pageSize={this.state.pageSize} pageNum={this.state.pageNum} articleAmount={this.state.articleAmount} handlePageChange={this.handlePageChange}/>
+        <ArticleList articles={this.state.articles}/>
+        <Page pageSize={this.state.pageSize} pageNum={this.state.pageNum} articleAmount={this.state.articleAmount}
+              handlePageChange={this.handlePageChange}/>
       </div>
     )
   }

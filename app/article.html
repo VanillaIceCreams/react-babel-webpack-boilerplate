@@ -34,24 +34,8 @@
 </style>
 </head>
 <body>
-<div  id="GotoTop">
-  <i class="fa fa-arrow-up"></i>
-</div>
-<div class="has-text-centered">213</div>
+<input type="submit" value="123123">
 </body>
 
-<script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript" src="md/marked.min.js"></script>
-<script type="text/javascript" src="md/prism.js"></script>
 
-<script>
-  $("#test").click(smoothscroll);
-  function smoothscroll(){
-    var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
-    if (currentScroll > 0) {
-      window.requestAnimationFrame(smoothscroll);
-      window.scrollTo (0,currentScroll - (currentScroll/5));
-    }
-  }
-</script>
 </html>

@@ -62,11 +62,17 @@ class ReviewForm extends React.Component {
         <div className="field">
           <label className="label">姓名</label>
           <div className="control">
-            <input className="input" type="text" placeholder="name"/>
+            <input className="input" type="text" placeholder="name"
+                   data-easyform="null;"
+                   data-message="请填写姓名"
+                   data-easytip="position:top;class:easy-blue;"/>
           </div>
           <label className="label">邮箱</label>
           <div className="control">
-            <input className="input" type="text" placeholder="email"/>
+            <input className="input" type="text" placeholder="email"
+                   data-easyform="email;"
+                   data-message="邮箱格式错误"
+                   data-easytip="position:bottom;class:easy-blue;"/>
           </div>
           <label className="label">评论</label>
           <div className="control">

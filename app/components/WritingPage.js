@@ -25,7 +25,7 @@ export default class WritingPage extends Component {
 class SomeArticleElements extends Component {
   constructor(props) {
     super(props);
-    this.state = {sortOneList: [],sortTwoList:[]};
+    this.state = {sortOneList: [], sortTwoList: []};
   }
 
   componentDidMount() {//获取一级分类
@@ -38,8 +38,9 @@ class SomeArticleElements extends Component {
       }
     )
   }
-  getSortTwo=(e)=>{
-    $.get("http://localhost:8080/api/sort/two",{parent:e.target.value}, (result)=> {
+
+  getSortTwo = (e)=> {
+    $.get("http://localhost:8080/api/sort/two", {parent: e.target.value}, (result)=> {
         if (result.status == 200) {
           this.setState({
             sortTwoList: result.data
@@ -49,46 +50,68 @@ class SomeArticleElements extends Component {
     )
 
   };
-  submit=()=>{
-      let article = {
-        title:this.refs.title.value,
-        overview:this.refs.overview.value,
-        sortOne:$(this.refs.sortOne).find("option:selected").val(),
-        sortTwo:$(this.refs.sortTwo).find("option:selected").val()
-      };
-    if(this.refs.atricleId.value){
-      article.atricleId = this.refs.atricleId.value;
+  submit = ()=> {
+
+
+    let article = {
+      title: this.refs.title.value,
+      overview: this.refs.overview.value,
+      sortOne: $(this.refs.sortOne).find("option:selected").val(),
+      sortTwo: $(this.refs.sortTwo).find("option:selected").val()
+    };
+    /*表单验证开始*/
+    let flag = true;
+    if (!article.title.trim().length) {
+      $('#title').easytip().show();
+      flag = false;
     }
-    article.markdown=$("#ta1").val();
-    article.content=$(".mde-preview-content").html();
-    $.ajax({
-      type: 'put',
-      contentType:'application/json;charset=UTF-8',
-      dataType:"json",
-      url: "http://localhost:8080/api/article",
-      data: JSON.stringify(article),//必须是json格式！
-      success: (result)=>{
-        alert("提交成功");
-        browserHistory.push("/article/"+result.data)
-      },
-      error: (result)=>{
-        alert("服务器出错");
-      }
-    });
+    if (!article.overview.trim().length) {
+      $('#overview').easytip().show();
+      flag = false;
+    }
+    if (!article.sortTwo) {
+      $('#sortTwo').easytip().show();
+      flag = false;
+    }
+    return false;
+    /*表单验证结束*/
+    if (flag) {
+      article.markdown = $("#ta1").val();
+      article.content = $(".mde-preview-content").html();
+      $.ajax({
+        type: 'put',
+        contentType: 'application/json;charset=UTF-8',
+        dataType: "json",
+        url: "http://localhost:8080/api/article",
+        data: JSON.stringify(article),//必须是json格式！
+        success: (result)=> {
+          alert("提交成功");
+          browserHistory.push("/article/" + result.data)
+        },
+        error: (result)=> {
+          alert("服务器出错");
+        }
+      });
+    }
   };
+
   render() {
     return (
       <div >
         {/*标题，总述，分类，提交，隐藏的ID*/}
-        <input className="input is-invisible" type="text"  ref="atricleId" disabled/>
+        <input className="input is-invisible" type="text" ref="atricleId" disabled/>
         <div className="fid">
           <div className="control">
-            <input className="input  is-medium" type="text" placeholder="标题" ref="title"/>
+            <input className="input  is-medium" type="text" placeholder="标题" ref="title" id="title"
+                   data-easytip="position:top;class:easy-black;disappear:1000;speed:1000;"
+                   data-easytip-message="请填写标题"/>
           </div>
         </div>
         <div className="field">
           <div className="control">
-            <textarea className="textarea is-medium" type="text" placeholder="概述" ref="overview"/>
+            <textarea className="textarea is-medium" type="text" placeholder="概述" ref="overview" id="overview"
+                      data-easytip="position:top;class:easy-black;disappear:1000;speed:1000;"
+                      data-easytip-message="请填写概述"/>
           </div>
         </div>
         <div className="field">
@@ -96,15 +119,17 @@ class SomeArticleElements extends Component {
             <div className="select">
               <select ref="sortOne" onChange={this.getSortTwo}>
                 {this.state.sortOneList.map((sortOne)=> {
-                  return  <option value={sortOne.sortId} >{sortOne.name}</option>
+                  return <option value={sortOne.sortId}>{sortOne.name}</option>
                 })}
               </select>
             </div>
             <div className="select">
 
-              <select ref="sortTwo" >
+              <select ref="sortTwo" id="sortTwo"
+                      data-easytip="position:right;class:easy-black;disappear:1000;speed:1000;"
+                      data-easytip-message="请选择分类">
                 {this.state.sortTwoList.map((sortTwo)=> {
-                  return  <option value={sortTwo.sortId} >{sortTwo.name}</option>
+                  return <option value={sortTwo.sortId}>{sortTwo.name}</option>
                 })}
               </select>
             </div>

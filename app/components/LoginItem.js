@@ -8,39 +8,42 @@ import hex_md5 from '../js/md5'
 export default class LoginItem extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {logined:false};//logined:是否已经登录  user：用户信息
+    this.state = {logined: false};//logined:是否已经登录  user：用户信息
   }
-  user={};//尝试成功
-  exit=()=>{
-    $.get("http://localhost:8080/api/user/exit",(result)=>{
-      if(result.status==200){
+
+  user = {};//尝试成功
+  exit = ()=> {
+    $.get("http://localhost:8080/api/user/exit", (result)=> {
+      if (result.status == 200) {
         this.setState({
           logined: false
         });
         this.user = {};
-      }else{
+      } else {
         alert("退出失败")
       }
     })
   }
+
   componentDidMount() {//向服务器确认登录情况
-      $.get("http://localhost:8080/api/user/ifLogin",(result)=>{
-        if(result.status==200){
+    $.get("http://localhost:8080/api/user/ifLogin", (result)=> {
+      if (result.status == 200) {
+        this.setState({
+          logined: true
+        });
+        this.user = result.data;
+      } else {
+        if (this.state.logined == true) {//没登录，但前端状态却是已登录
           this.setState({
-            logined: true
-          });
-          this.user = result.data;
-        }else{
-          if(this.state.logined==true){//没登录，但前端状态却是已登录
-            this.setState({
-              logined: false
-            })
-          }
+            logined: false
+          })
         }
-      })
+      }
+    })
   }
-  changeToLogined=(user)=>{
-    this.user= user;
+
+  changeToLogined = (user)=> {
+    this.user = user;
     this.setState({
       logined: true
     });
@@ -48,13 +51,13 @@ export default class LoginItem extends React.Component {
   };
 
   render() {
-    if(this.state.logined==true){
+    if (this.state.logined == true) {
       return (
         <div>
           <Logined user={this.user} exit={this.exit}/>
         </div>
       )
-    }else{
+    } else {
       return (
         <div>
           <Logining changeToLogined={this.changeToLogined}/>
@@ -65,37 +68,48 @@ export default class LoginItem extends React.Component {
 }
 class Logining extends React.Component {
 
-  switchModal=()=>{
-    if( $(this.refs.loginModal).hasClass("is-active")){
+  switchModal = ()=> {
+    if ($(this.refs.loginModal).hasClass("is-active")) {
       $(this.refs.loginModal).removeClass("is-active")
-    }else{
+    } else {
       $(this.refs.loginModal).addClass("is-active")
     }
   };
-  handleLogin=(event)=>{
-    let url  =   "http://localhost:8080/api/user/login";
-    var account = this.refs.account.value;
-    var password = hex_md5(this.refs.password.value);
-    var target =  $(event.target);
-    target.addClass("is-loading");
-    $.get(url,{ account: account, password: password },(result)=>{
-      target.removeClass("is-loading");
-      if(result.status==200){
-        $(this.refs.tips).addClass("is-invisible");
-        this.switchModal();
-        this.props.changeToLogined(result.data)
-      }else{
-        $(this.refs.tips).removeClass("is-invisible");
-      }
-    });
-
+  handleLogin = (event)=> {
+    let url = "http://localhost:8080/api/user/login";
+    let account = this.refs.account.value;
+    let password = hex_md5(this.refs.password.value);
+    let target = $(event.target);
+    let flag = true;//表单验证
+    if (!account.trim().length) {
+      $('#account').easytip().show();
+      flag = false;
+    }
+    if (!this.refs.password.value.trim().length) {
+      $('#password').easytip().show();
+      flag = false;
+    }
+    if (flag) {
+      target.addClass("is-loading");
+      $.get(url, {account: account, password: password}, (result)=> {
+        target.removeClass("is-loading");
+        if (result.status == 200) {
+          $(this.refs.tips).addClass("is-invisible");
+          this.switchModal();
+          this.props.changeToLogined(result.data)
+        } else {
+          $(this.refs.tips).removeClass("is-invisible");
+        }
+      });
+    }
 
   };
+
   render() {
     return (
       <div>
         {/* 登录按钮开始 */}
-        <div className="navbar-item" >
+        <div className="navbar-item">
           <div className="field is-grouped" onClick={this.switchModal}>
             <p className="control">
               <a className="button is-primary">
@@ -118,7 +132,7 @@ class Logining extends React.Component {
             <section className="modal-card-body ">
               <div className="field  has-text-centered has-text-danger is-invisible" ref="tips">
                 <i className="fa fa-times-circle "/>
-                <span> 用户名或密码错误</span>
+                <span>用户名或密码错误</span>
               </div>
               <div className="field is-horizontal">
                 <div className="field-label is-normal">
@@ -127,7 +141,9 @@ class Logining extends React.Component {
                 <div className="field-body">
                   <div className="field">
                     <p className="control">
-                      <input className="input" type="text" placeholder="userName" ref="account"/>
+                      <input className="input" type="text" placeholder="userName" ref="account" id="account"
+                             data-easytip-message="请填写用户名"
+                             data-easytip="position:top;class:easy-black;disappear:1000;speed:1000;"/>
                     </p>
                   </div>
                 </div>
@@ -139,7 +155,9 @@ class Logining extends React.Component {
                 <div className="field-body">
                   <div className="field">
                     <p className="control">
-                      <input className="input" type="password" placeholder="password" ref="password"/>
+                      <input className="input" type="password" placeholder="password" ref="password" id="password"
+                             data-easytip-message="请填写密码"
+                             data-easytip="position:top;class:easy-black;disappear:1000;speed:1000;"/>
                     </p>
                   </div>
                 </div>

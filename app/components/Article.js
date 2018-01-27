@@ -120,14 +120,36 @@ class ReviewList extends React.Component {
 }
 class ReviewForm extends React.Component {
 
+  componentDidMount() {
+    //$("#formArea").easyform();
+    $.get("http://localhost:8080/api/article/" + this.props.articleId, (result)=> {
+        $(".markdown-body").html(result.data.content);
+      }
+    )
+  }
   handleClick = ()=> {
     let review = {
       name: this.refs.name.value,
       email: this.refs.email.value,
       content: this.refs.content.value
     };
-    this.props.putReview(review, this);
-    // this.cleatInput();
+    let flag = true;//如果是true，才提交
+    //邮箱验证
+    if(!/\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/.test(review.email)){
+      $('#email').easytip().show();
+      flag=false;
+    }
+    if(!review.name.trim().length){
+      $('#name').easytip().show();
+      flag=false;
+    }
+    if(!review.content.trim().length){
+      $('#content').easytip().show();
+      flag=false;
+    }
+    if(flag){
+      this.props.putReview(review, this);//注意这个this，贼6
+    }
   };
   cleatInput = ()=> {//清空输入内容
     this.refs.name.value = '';
@@ -137,19 +159,25 @@ class ReviewForm extends React.Component {
 
   render() {
     return (
-      <div>
-        <div className="field">
+      <div id="formArea">
+        <div className="field" >
           <label className="label">姓名</label>
           <div className="control">
-            <input className="input" type="text" placeholder="name" ref="name"/>
+            <input className="input" type="text" placeholder="name" ref="name" id="name"
+                   data-easytip-message="请填写姓名(不许敲奇怪的符号哦~)"
+                   data-easytip="position:top;class:easy-black;left:40;disappear:1000;speed:1000;"/>
           </div>
           <label className="label">邮箱</label>
           <div className="control">
-            <input className="input" type="text" placeholder="email" ref="email"/>
+            <input className="input" type="text" placeholder="email" ref="email" id="email"
+                   data-easytip="position:top;class:easy-black;left:40;disappear:1000;speed:1000;"
+                   data-easytip-message="邮箱格式错误"/>
           </div>
           <label className="label">评论</label>
           <div className="control">
-            <textarea className="textarea" placeholder="textarea" ref="content"/>
+            <textarea className="textarea" placeholder="textarea" ref="content" id="content"
+                      data-easytip="position:top;class:easy-black;left:40;disappear:1000;speed:1000;"
+                      data-easytip-message="请填写评论"/>
           </div>
         </div>
         <div className="field is-grouped is-grouped-right">
@@ -159,7 +187,7 @@ class ReviewForm extends React.Component {
             </a>
           </p>
           <p className="control">
-            <a className="button is-light">
+            <a className="button is-light" onClick={this.cleatInput}>
               Clear
             </a>
           </p>

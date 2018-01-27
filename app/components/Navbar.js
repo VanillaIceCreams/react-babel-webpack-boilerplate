@@ -24,7 +24,9 @@ export default class Navbar extends React.Component {
       }
     )
   }
-
+  closeBurger=()=>{//点击汉堡菜单内的选项后，关闭汉堡菜单
+    $("#fuck,#fuckButton").removeClass("is-active");
+  };
   render() {
     return (
       <div>
@@ -33,7 +35,7 @@ export default class Navbar extends React.Component {
             <IndexLink className="navbar-item is-size-5" to="/">
               <span>香草的博客</span>
             </IndexLink>
-            <div className="navbar-burger burger" data-target="fuck">
+            <div className="navbar-burger burger" data-target="fuck" id="fuckButton">
               <span></span>
               <span></span>
               <span></span>
@@ -42,19 +44,19 @@ export default class Navbar extends React.Component {
 
           <div id="fuck" className="navbar-menu " style={{paddingRight: "30px"}}>
             <div className="navbar-start">
-              <IndexLink to="/" className="navbar-item">
+              <IndexLink to="/" className="navbar-item" onClick={this.closeBurger}>
                 Home
               </IndexLink>
               {this.state.listSortList.map((data)=> {//   /article/:lv/:sort
                 let url1 = "/article/one/" + data.sort1.sortId;
                 return <div className="navbar-item has-dropdown is-hoverable" key={data.sort1.sortId}>
-                  <Link className="navbar-link" to={url1}>
+                  <Link className="navbar-link" to={url1} onClick={this.closeBurger}>
                     {data.sort1.name}
                   </Link>
                   <div className="navbar-dropdown is-boxed ">
                     {data.sort2s.map((sort2)=> {
                       let url2 = "/article/two/" + sort2.sortId;
-                      return <Link className="navbar-item" to={url2} key={sort2.sortId}>
+                      return <Link className="navbar-item" to={url2} key={sort2.sortId} onClick={this.closeBurger}>
                         {sort2.name}
                       </Link>
                     })}
@@ -81,5 +83,4 @@ export default class Navbar extends React.Component {
     );
   }
 }
-
 
