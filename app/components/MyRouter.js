@@ -11,7 +11,8 @@ import Article from './Article.js'
 import Footer from './Footer.js'
 import  Navbar from './Navbar.js'
 import  WritingPage from './WritingPage.js'
-
+import  Manage from './Manage.js'
+import  AlterArticle from './AlterArticle.js'
 
 ReactDOM.render(
   <div>
@@ -21,6 +22,8 @@ ReactDOM.render(
         <Route path="/article/:lv/:sort" component={ArticleListPage}/>
         <Route path="/article/:articleId" component={Article}/>
         <Route path="/markdown" component={ WritingPage}/>
+        <Route path="/manage" component={Manage}/>
+        <Route path="/alter/:articleId" component={AlterArticle}/>
       </Route>
     </Router>
     <Footer/>

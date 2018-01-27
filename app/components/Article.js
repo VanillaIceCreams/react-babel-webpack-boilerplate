@@ -66,6 +66,7 @@ class Markdown extends React.Component {
   componentDidMount() {
     //console.log(this.props.articleId);
     $.get("http://localhost:8080/api/article/" + this.props.articleId, (result)=> {
+      console.log(result.data.content)
         $(".markdown-body").html(result.data.content);
       }
     )

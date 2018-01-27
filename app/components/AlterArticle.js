@@ -1,4 +1,7 @@
 /**
+ * Created by Administrator on 2018/1/27.
+ */
+/**
  * Created by Administrator on 2018/1/17.
  */
 /**
@@ -16,8 +19,8 @@ export default class WritingPage extends Component {
   render() {
     return (
       <div>
-        <SomeArticleElements/>
-        <MarkDown/>
+        <SomeArticleElements articleId = {this.props.params.articleId}/>
+        <MarkDown articleId = {this.props.params.articleId}/>
       </div>
     )
   }
@@ -25,39 +28,28 @@ export default class WritingPage extends Component {
 class SomeArticleElements extends Component {
   constructor(props) {
     super(props);
-    this.state = {sortOneList: [], sortTwoList: []};
+    this.article = {};
+    this.state = {title:"",overview:"",};
   }
-
-  componentDidMount() {//获取一级分类
-    $.get("http://localhost:8080/api/sort/one", (result)=> {
+  componentDidMount() {//获取文章
+    $.get("http://localhost:8080/api/article/" + this.props.articleId, (result)=> {
         if (result.status == 200) {
+          this.article=result.data;
           this.setState({
-            sortOneList: result.data
-          })
+            title:result.data.title,
+            overview:result.data.overview
+          });
         }
       }
     )
   }
-
-  getSortTwo = (e)=> {
-    $.get("http://localhost:8080/api/sort/two", {parent: e.target.value}, (result)=> {
-        if (result.status == 200) {
-          this.setState({
-            sortTwoList: result.data
-          })
-        }
-      }
-    )
-
-  };
   submit = ()=> {
-
-
     let article = {
+      articleId: this.refs.atricleId.value,
       title: this.refs.title.value,
       overview: this.refs.overview.value,
-      sortOne: $(this.refs.sortOne).find("option:selected").val(),
-      sortTwo: $(this.refs.sortTwo).find("option:selected").val()
+      sortOne: $(this.refs.sortOne).find("option:selected").val(),//???
+      sortTwo: $(this.refs.sortTwo).find("option:selected").val()//???
     };
     /*表单验证开始*/
     let flag = true;
@@ -73,19 +65,22 @@ class SomeArticleElements extends Component {
       $('#sortTwo').easytip().show();
       flag = false;
     }
+
     /*表单验证结束*/
     if (flag) {
       article.markdown = $("#ta1").val();
       article.content = $(".mde-preview-content").html();
+
+      console.log(article)
       $.ajax({
-        type: 'put',
+        type: 'post',
         contentType: 'application/json;charset=UTF-8',
         dataType: "json",
         url: "http://localhost:8080/api/article",
         data: JSON.stringify(article),//必须是json格式！
         success: (result)=> {
           alert("提交成功");
-          browserHistory.push("/article/" + result.data)
+          browserHistory.push("/article/" + result.data)//后台返回了
         },
         error: (result)=> {
           alert("服务器出错");
@@ -93,43 +88,53 @@ class SomeArticleElements extends Component {
       });
     }
   };
-
+  handleChange=(e)=> {
+    if(e.target.id=="title"){
+      this.setState({title:e.target.value});
+    }else if(e.target.id=="overview"){
+      this.setState({overview:e.target.value});
+    }
+  }
   render() {
     return (
       <div >
         {/*标题，总述，分类，提交，隐藏的ID*/}
-        <input className="input is-invisible" type="text" ref="atricleId" disabled/>
+        <input className="input is-invisible" type="text" ref="atricleId" defaultValue={this.props.articleId} disabled/>
         <div className="fid">
           <div className="control">
             <input className="input  is-medium" type="text" placeholder="标题" ref="title" id="title"
                    data-easytip="position:top;class:easy-black;disappear:1000;speed:1000;"
-                   data-easytip-message="请填写标题"/>
+                   data-easytip-message="请填写标题"
+                   value ={this.state.title} onChange={this.handleChange}/>
           </div>
         </div>
         <div className="field">
           <div className="control">
             <textarea className="textarea is-medium" type="text" placeholder="概述" ref="overview" id="overview"
                       data-easytip="position:top;class:easy-black;disappear:1000;speed:1000;"
-                      data-easytip-message="请填写概述"/>
+                      data-easytip-message="请填写概述"
+                      value={this.state.overview} onChange={this.handleChange}/>
           </div>
         </div>
         <div className="field">
           <div className="control">
             <div className="select">
-              <select ref="sortOne" onChange={this.getSortTwo}>
-                {this.state.sortOneList.map((sortOne)=> {
-                  return <option value={sortOne.sortId}>{sortOne.name}</option>
-                })}
+              <select ref="sortOne" onChange={this.getSortTwo} disabled>
+                <option value={this.article.sortOne}>{this.article.sortOne}</option>
+                {/*this.state.sortOneList.map((sortOne)=> {
+                 return <option value={sortOne.sortId}>{sortOne.name}</option>
+                 })*/}
               </select>
             </div>
             <div className="select">
 
-              <select ref="sortTwo" id="sortTwo"
+              <select ref="sortTwo" id="sortTwo" disabled
                       data-easytip="position:right;class:easy-black;disappear:1000;speed:1000;"
                       data-easytip-message="请选择分类">
-                {this.state.sortTwoList.map((sortTwo)=> {
-                  return <option value={sortTwo.sortId}>{sortTwo.name}</option>
-                })}
+                <option value={this.article.sortTwo}>{this.article.sortTwo}</option>
+                {/*this.state.sortTwoList.map((sortTwo)=> {
+                 return <option value={sortTwo.sortId}>{sortTwo.name}</option>
+                 })*/}
               </select>
             </div>
             <a className="button is-danger is-outlined pull-right" onClick={this.submit}>
@@ -144,19 +149,35 @@ class SomeArticleElements extends Component {
     )
   }
 }
+
 class MarkDown extends Component {
 
   constructor(props) {
     super(props);
+    this.flag = true;
     this.state = {
       reactMdeValue: {text: '', selection: null},
     };
   }
-
+  componentDidMount() {//获取文章
+    $.get("http://localhost:8080/api/article/" + this.props.articleId, (result)=> {
+        if (result.status == 200) {
+          $("#ta1").val(result.data.markdown);
+        }
+      }
+    )
+  }
   handleValueChange = (value) => {
     this.setState({reactMdeValue: value});
   };
+  /**
+   * 巨他妈重要！因为取不到人家写好的组件，只好在这里搞事（另外，为什么子组件总是渲染2次？？）
+   */
   componentDidUpdate = ()=> {
+    if (this.flag && this.props.markdown) {
+      $("#ta1").val(this.props.markdown);
+      this.flag=false;
+    }
     $(this.refs.container).find("code").each(function (i, block) {
       Prism.highlightElement(block);
     });

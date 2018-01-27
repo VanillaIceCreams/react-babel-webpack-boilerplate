@@ -44,8 +44,8 @@ class ArticleList1 extends React.Component {
               <Link to={"/article/"+article.articleId}>
                 <article className="media">
                   <div className="media-left">
-                    <figure className="image is-128x128">
-                      <img src="https://bulma.io/images/placeholders/128x128.png" alt="Image"/>
+                    <figure className="image is-2by1 is-128x128">
+                      <img src="http://t1.27270.com/uploads/tu/ztmb/28.jpg" alt="Image"/>
                     </figure>
                   </div>
 
