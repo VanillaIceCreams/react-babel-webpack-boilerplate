@@ -5,59 +5,64 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import hex_md5 from '../js/md5'
-export default class LoginItem extends React.Component {
+import { Link} from 'react-router';
+import URL from './URL';
+
+
+
+export default class LoginItem extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {logined: false};//logined:是否已经登录  user：用户信息
+    this.state = {logined: false, user:{}};//logined:是否已经登录  user：用户信息
   }
 
-  user = {};//尝试成功
+
   exit = ()=> {
-    $.get("http://localhost:8080/api/user/exit", (result)=> {
+    $.get(URL.exitURL, (result)=> {
       if (result.status == 200) {
         this.setState({
-          logined: false
+          logined: false,
+          user:{}
         });
-        this.user = {};
       } else {
         alert("退出失败")
       }
     })
-  }
-
-  componentDidMount() {//向服务器确认登录情况
-    $.get("http://localhost:8080/api/user/ifLogin", (result)=> {
+  };
+  //向服务器确认登录情况
+  componentDidMount() {
+    $.get(URL.ifLoginURL, (result)=> {
       if (result.status == 200) {
         this.setState({
-          logined: true
+          logined: true,
+          user:result.data
         });
-        this.user = result.data;
       } else {
         if (this.state.logined == true) {//没登录，但前端状态却是已登录
           this.setState({
-            logined: false
+            logined: false,
+            user:{}//这里是不是该把user重置为{}？
           })
         }
       }
     })
   }
-
+   //由Logining组件来调用，用于改变登录状态
   changeToLogined = (user)=> {
-    this.user = user;
     this.setState({
-      logined: true
+      logined: true,
+      user:user
     });
-
   };
 
   render() {
-    if (this.state.logined == true) {
+    if (this.state.logined == true) {//如果已经登录了，就渲染这个DOM
       return (
         <div>
-          <Logined user={this.user} exit={this.exit}/>
+          <Logined user={this.state.user} exit={this.exit}/>
         </div>
       )
-    } else {
+    } else {//如果未登录，就渲染这个DOM
       return (
         <div>
           <Logining changeToLogined={this.changeToLogined}/>
@@ -66,7 +71,8 @@ export default class LoginItem extends React.Component {
     }
   }
 }
-class Logining extends React.Component {
+
+class Logining extends React.PureComponent {
 
   switchModal = ()=> {
     if ($(this.refs.loginModal).hasClass("is-active")) {
@@ -76,9 +82,9 @@ class Logining extends React.Component {
     }
   };
   handleLogin = (event)=> {
-    let url = "http://localhost:8080/api/user/login";
+    let url = URL.loginURL;
     let account = this.refs.account.value;
-    let password = hex_md5(this.refs.password.value);
+    let password = hex_md5(this.refs.password.value);//md5加密了
     let target = $(event.target);
     let flag = true;//表单验证
     if (!account.trim().length) {
@@ -177,7 +183,7 @@ class Logining extends React.Component {
   }
 
 }
-class Logined extends React.Component {
+class Logined extends React.PureComponent {
   render() {
     return (
       <div className="navbar-item has-dropdown is-hoverable" style={{height: '100%'}}>
@@ -185,9 +191,9 @@ class Logined extends React.Component {
           {this.props.user.nickname}
         </a>
         <div className="navbar-dropdown">
-          <a className="navbar-item">
+          <Link to="/manage" className="navbar-item">
             后台管理
-          </a>
+          </Link>
           <a className="navbar-item" onClick={this.props.exit}>
             退出
           </a>

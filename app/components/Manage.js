@@ -13,6 +13,7 @@ import ReactDOM from 'react-dom'
 import Page from  './Page.js'
 import {Link,IndexLink } from 'react-router';
 import {browserHistory} from 'react-router';
+import URL from './URL';
 
 
 export default class ManageArticleList extends React.Component {
@@ -28,8 +29,7 @@ export default class ManageArticleList extends React.Component {
    * URL2:获取当前分类的文章总数
    */
   componentDidMount() {
-    let url1 = "http://localhost:8080/api/article/"
-    this.getArticleList(url1);
+    this.getArticleList(URL.articleURL);
   }
 
   /**
@@ -40,26 +40,25 @@ export default class ManageArticleList extends React.Component {
     $.get(url, (result)=> {
         if (result.status == 200) {
           this.setState({
-            articles: result.data,
+            articles: result.data
           });
         }
       }
     )
   };
   deleteArticle= (e)=> {
-
     let articleId = e.target.id;
     if(confirm("确定删除《"+e.target.title+"》吗"))//二次确认，因为后面只有一行代码了，就不加大括号了
     $.ajax({
       type: 'delete',
       contentType: 'application/json;charset=UTF-8',
       dataType: "json",
-      url: "http://localhost:8080/api/article/",
+      url: URL.articleURL,
       data: articleId,
       success: (result)=> {
         alert("删除成功");
         let newArticles = this.state.articles.filter((article)=>{
-          if(article.articleId==articleId)return false
+          if(article.articleId==articleId){return false}
           return true
         });
         this.setState({

@@ -9,6 +9,7 @@ import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import Page from  './Page.js'
 import {Link,IndexLink } from 'react-router';
+import URL from './URL';
 
 export default class ArticleListPage extends React.Component {
   constructor(props) {
@@ -27,11 +28,10 @@ export default class ArticleListPage extends React.Component {
    * URL2:获取当前分类的文章总数
    */
   componentDidMount() {
-    let url1 = "http://localhost:8080/api/article/" + this.props.params.lv + "/" +
+    let url1 = URL.articleURL + this.props.params.lv + "/" +
       this.props.params.sort + "?pageNum=" + this.state.pageNum + "&pageSize=" + this.state.pageSize;
-    let url2 = "http://localhost:8080/api/articleAmount/" + this.props.params.lv + "/" + this.props.params.sort;
-    this.getArticleList(url1);
-    this.getArticleAmount(url2);
+    let url2 = URL.articleAmountURL + this.props.params.lv + "/" + this.props.params.sort;
+    this.setArticleAmountAndList(url1, url2)
   }
 
   /**
@@ -43,7 +43,7 @@ export default class ArticleListPage extends React.Component {
         if (result.status == 200) {
           this.setState({
             articles: result.data,
-            pageNum:1
+            pageNum: 1
           });
         }
       }
@@ -63,16 +63,61 @@ export default class ArticleListPage extends React.Component {
       }
     )
   };
+  /**
+   * 获取文章列表的信息Promise
+   * @param url
+   */
+  getArticleListPromise = (url)=> {
+    return new Promise(function (resolve, reject) {
+      $.get(url, (result)=> {
+          if (result.status == 200) {
+            resolve(result.data);
+          } else {
+            reject("getArticleListPromise出错,75行");
+          }
+        }
+      )
+    });
+  };
+  /**
+   * 获取文章总数Promise
+   * @param url
+   */
+  getArticleAmountPromise = (url)=> {
+    return new Promise(function (resolve, reject) {
+      $.get(url, (result)=> {
+          if (result.status == 200) {
+            resolve(result.data);
+          } else {
+            reject("getArticleAmountPromise出错，91行");
+          }
+        }
+      )
+    });
+  };
+
+  setArticleAmountAndList = (url1, url2)=> {
+    Promise.all([
+      this.getArticleListPromise(url1),
+      this.getArticleAmountPromise(url2)
+    ]).then(([articles,articleAmount])=> {
+      this.setState({
+        articleAmount: articleAmount,
+        articles: articles,
+        pageNum: 1
+      })
+    }).catch(e => console.log(e));
+  }
+
 
   /**
    * 组件参数发生变更时候调用（本处用于url参数变更时，请求新的文章信息）
    * @param nextProps
    */
   componentWillReceiveProps(nextProps) {
-    let url1 = "http://localhost:8080/api/article/" + nextProps.routeParams.lv + "/" + nextProps.routeParams.sort + "?pageNum=" + this.state.pageNum + "&pageSize=" + this.state.pageSize;
-    let url2 = "http://localhost:8080/api/articleAmount/" + nextProps.routeParams.lv + "/" + nextProps.routeParams.sort;
-    this.getArticleList(url1);
-    this.getArticleAmount(url2);
+    let url1 = URL.articleURL + nextProps.routeParams.lv + "/" + nextProps.routeParams.sort + "?pageNum=" + this.state.pageNum + "&pageSize=" + this.state.pageSize;
+    let url2 = URL.articleAmountURL + nextProps.routeParams.lv + "/" + nextProps.routeParams.sort;
+    this.setArticleAmountAndList(url1, url2)
   }
 
   /**
@@ -81,7 +126,7 @@ export default class ArticleListPage extends React.Component {
    * @param page 子组件传递上来
    */
   handlePageChange = (page)=> {
-    let url3 = "http://localhost:8080/api/article/" + this.props.params.lv + "/" +
+    let url3 = URL.articleURL + this.props.params.lv + "/" +
       this.props.params.sort + "?pageNum=" + page + "&pageSize=" + this.state.pageSize;
     $.get(url3, (result)=> {
         if (result.status == 200) {
@@ -105,8 +150,7 @@ export default class ArticleListPage extends React.Component {
   }
 }
 
-class ArticleList extends React.Component {
-
+class ArticleList extends React.PureComponent {
 
   render() {
     return (

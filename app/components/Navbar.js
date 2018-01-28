@@ -3,19 +3,18 @@ import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import {Link,IndexLink } from 'react-router';
 import LoginItem from './LoginItem'
+import URL from './URL';
 
-
-//let url = "http://localhost:8081/test/sort.json";
 export default class Navbar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {listSortList: []};
   }
 
-  getSortList = "http://localhost:8080/api/sort";
-
   componentDidMount() {
-    $.get(this.getSortList, (result)=> {
+    //获取分类集合
+    $.get(URL.listSortListURL, (result)=> {
+
         if (result.status == 200) {
           this.setState({
             listSortList: result.data
@@ -74,40 +73,62 @@ export default class Navbar extends React.Component {
         {/* 内容体开始 */}
         <div className="container " style={{marginTop:"50px"}}>
           <div className="notification is-white">
-            {this.props.children}
+            {this.props.children} {/* 这行很重要，和router有关 */}
           </div>
         </div>
         {/* 内容体结束*/}
-
       </div>
     );
   }
 }
 /**
  * 汉堡菜单,添加监听（注意，上面模块里还有个监听...）
+ * 改成了立即执行函数
  */
-document.addEventListener('DOMContentLoaded', function () {
+(()=> {
+  document.addEventListener('DOMContentLoaded', function () {
+    // Get all "navbar-burger" elements
+    var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    // Check if there are any navbar burgers
+    if ($navbarBurgers.length > 0) {
+      // Add a click event on each of them
+      $navbarBurgers.forEach(function ($el) {
+        $el.addEventListener('click', function () {
+          // Get the target from the "data-target" attribute
+          var target = $el.dataset.target;
+          var $target = document.getElementById(target);
 
-  // Get all "navbar-burger" elements
-  var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+          // Toggle the class on both the "navbar-burger" and the "navbar-menu"
+          $el.classList.toggle('is-active');
+          $target.classList.toggle('is-active');
 
-  // Check if there are any navbar burgers
-  if ($navbarBurgers.length > 0) {
-
-    // Add a click event on each of them
-    $navbarBurgers.forEach(function ($el) {
-      $el.addEventListener('click', function () {
-
-        // Get the target from the "data-target" attribute
-        var target = $el.dataset.target;
-        var $target = document.getElementById(target);
-
-        // Toggle the class on both the "navbar-burger" and the "navbar-menu"
-        $el.classList.toggle('is-active');
-        $target.classList.toggle('is-active');
-
+        });
       });
-    });
-  }
-});
-
+    }
+  });
+})()
+//document.addEventListener('DOMContentLoaded', function () {
+//
+//  // Get all "navbar-burger" elements
+//  var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+//
+//  // Check if there are any navbar burgers
+//  if ($navbarBurgers.length > 0) {
+//
+//    // Add a click event on each of them
+//    $navbarBurgers.forEach(function ($el) {
+//      $el.addEventListener('click', function () {
+//
+//        // Get the target from the "data-target" attribute
+//        var target = $el.dataset.target;
+//        var $target = document.getElementById(target);
+//
+//        // Toggle the class on both the "navbar-burger" and the "navbar-menu"
+//        $el.classList.toggle('is-active');
+//        $target.classList.toggle('is-active');
+//
+//      });
+//    });
+//  }
+//});
+//

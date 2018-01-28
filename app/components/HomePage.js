@@ -2,9 +2,10 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import {Link,IndexLink } from 'react-router';
+import URL from './URL';
 
 
-//let url = "http://localhost:8081/test/article.json";
+
 
 export default class HomePage extends React.Component {
 

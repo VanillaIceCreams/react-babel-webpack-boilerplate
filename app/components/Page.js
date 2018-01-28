@@ -4,9 +4,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
+import URL from './URL';
 
 
-export default class Page extends React.Component {
+export default class Page extends React.PureComponent {
 
   handlePageClick = (event)=> {
     this.props.handlePageChange(parseInt(event.target.innerHTML))
@@ -14,7 +15,7 @@ export default class Page extends React.Component {
   //如果(当前页-1)>1,那么1...now-1,now
   //如果(当前页+1)<totalPage,那么now,now+1...totalPage
   render() {
-    let totalPage = parseInt(this.props.articleAmount / this.props.pageSize + 1);
+    let totalPage = Math.ceil(this.props.articleAmount / this.props.pageSize );
     let pre = [];
     let last = [];
 
@@ -22,11 +23,11 @@ export default class Page extends React.Component {
     for (let i = this.props.pageNum; i > 0; i--) {
       if (i == this.props.pageNum) {//给当前页加高亮并且不许点击
         pre.unshift(<li>
-          <a className="pagination-link is-current">{i}</a>
+          <a className="pagination-link is-current" key={i}>{i}</a>
         </li>);
       } else {
         pre.unshift(<li>
-          <a className="pagination-link" onClick={this.handlePageClick}>{i}</a>
+          <a className="pagination-link" onClick={this.handlePageClick} key={i}>{i}</a>
         </li>);
       }
       if (pre.length == 2 && i > 1) {
@@ -34,7 +35,7 @@ export default class Page extends React.Component {
           <span className="pagination-ellipsis">&hellip;</span>
         </li>);
         pre.unshift(<li>
-          <a className="pagination-link" onClick={this.handlePageClick}>1</a>
+          <a className="pagination-link" onClick={this.handlePageClick} key="1">1</a>
         </li>);
         break;
       }

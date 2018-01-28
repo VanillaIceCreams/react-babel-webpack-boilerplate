@@ -4,81 +4,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
-import  '../css/mycss.css'
 
-export default class Article extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {reviewList: []};
-  }
-
-  getReviewUrl = "http://localhost:8080/api/review/" + this.props.params.articleId;
-  putReviewUrl = "http://localhost:8080/api/review";
-
-  putReview = (review, reviewForm)=> {//reviewForm是组件对象，用于提交成功后清空输入内容！
-    review.articleId = this.props.params.articleId;
-    let url = "http://localhost:8080/api/review";
-    $.ajax({
-      type: 'put',
-      contentType: 'application/json;charset=UTF-8',
-      dataType: "json",
-      url: this.putReviewUrl,
-      data: JSON.stringify(review),//必须是json格式！
-      success: (result)=> {
-        alert("评论成功");
-        this.getReviewList(this.getReviewUrl)
-        reviewForm.cleatInput();
-      },
-      error: (result)=> {
-        alert("服务器出错");
-      }
-    });
-  };
-
-  getReviewList(url) {
-    $.get(url, (result)=> {
-        if (result.status == 200) {
-          this.setState({
-            reviewList: result.data
-          })
-        }
-      }
-    )
-  }
-
-  componentDidMount() {
-    this.getReviewList(this.getReviewUrl)
-  }
-
-  render() {
-    return (
-      <div>
-        <Markdown articleId={this.props.params.articleId}/>
-        <Review reviewList={this.state.reviewList} putReview={this.putReview}/>
-        <GotoTop/>
-      </div>
-    );
-  }
-}
-class Markdown extends React.Component {
-
-  componentDidMount() {
-    //console.log(this.props.articleId);
-    $.get("http://localhost:8080/api/article/" + this.props.articleId, (result)=> {
-      console.log(result.data.content)
-        $(".markdown-body").html(result.data.content);
-      }
-    )
-  }
-
-  render() {
-    return (
-      <div className="markdown-body"></div>
-    );
-  }
-}
-class Review extends React.Component {
+export default class Review extends React.Component {
   render() {
     return (
       <div>
@@ -92,7 +19,6 @@ class Review extends React.Component {
 }
 class ReviewList extends React.Component {
   render() {
-
     return (
       <div className="card">
         {
@@ -197,20 +123,4 @@ class ReviewForm extends React.Component {
       </div>
     );
   }
-}
-class GotoTop extends React.Component {
-  smoothscroll = ()=> {
-    var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
-    if (currentScroll > 0) {
-      window.requestAnimationFrame(this.smoothscroll);
-      window.scrollTo(0, currentScroll - (currentScroll / 5));
-    }
-  }
-
-  render() {
-    return <div id="GotoTop" onClick={this.smoothscroll}>
-      <i className="fa fa-arrow-up"/>
-    </div>
-  }
-
 }

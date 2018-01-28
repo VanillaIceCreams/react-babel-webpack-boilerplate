@@ -14,7 +14,7 @@ export default class Footer extends React.Component {
       <div className="container">
         <div className="content has-text-centered">
           <p>
-            <strong>Bulma</strong> is <a href="https://jgthms.com">a framework</a> which only depend on css
+            <strong>This Blog</strong> is a fucking project!!!
           </p>
         </div>
       </div>

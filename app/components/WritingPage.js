@@ -10,6 +10,7 @@ import ReactMde, { ReactMdeCommands } from 'react-mde';
 import '../css/react-mde-all.css'
 import prism from '../md/prism.js'
 import {browserHistory} from 'react-router';
+import URL from './URL';
 
 
 export default class WritingPage extends Component {
@@ -25,64 +26,50 @@ export default class WritingPage extends Component {
 class SomeArticleElements extends Component {
   constructor(props) {
     super(props);
-    this.state = {sortOneList: [], sortTwoList: []};
+    this.state = {listSortList: [], article: {},sortTwos:[]};
   }
 
-  componentDidMount() {//获取一级分类
-    $.get("http://localhost:8080/api/sort/one", (result)=> {
+  /**
+   * 获取分类集合
+   */
+  componentDidMount() {
+    $.get(URL.listSortListURL, (result)=> {
         if (result.status == 200) {
           this.setState({
-            sortOneList: result.data
+            listSortList: result.data
           })
         }
       }
     )
   }
 
-  getSortTwo = (e)=> {
-    $.get("http://localhost:8080/api/sort/two", {parent: e.target.value}, (result)=> {
-        if (result.status == 200) {
-          this.setState({
-            sortTwoList: result.data
-          })
-        }
-      }
-    )
-
-  };
   submit = ()=> {
 
-
-    let article = {
-      title: this.refs.title.value,
-      overview: this.refs.overview.value,
-      sortOne: $(this.refs.sortOne).find("option:selected").val(),
-      sortTwo: $(this.refs.sortTwo).find("option:selected").val()
-    };
     /*表单验证开始*/
     let flag = true;
-    if (!article.title.trim().length) {
+    if (!this.state.article.title) {
       $('#title').easytip().show();
       flag = false;
     }
-    if (!article.overview.trim().length) {
+    if (!this.state.article.overview) {
       $('#overview').easytip().show();
       flag = false;
     }
-    if (!article.sortTwo) {
+    if (!this.state.article.sortTwo) {
       $('#sortTwo').easytip().show();
       flag = false;
     }
     /*表单验证结束*/
     if (flag) {
-      article.markdown = $("#ta1").val();
-      article.content = $(".mde-preview-content").html();
+      this.state.article.markdown = $("#ta1").val();
+      this.state.article.content = $(".mde-preview-content").html();
+
       $.ajax({
         type: 'put',
         contentType: 'application/json;charset=UTF-8',
         dataType: "json",
-        url: "http://localhost:8080/api/article",
-        data: JSON.stringify(article),//必须是json格式！
+        url: URL.articleURL,
+        data: JSON.stringify(this.state.article),//必须是json格式！
         success: (result)=> {
           alert("提交成功");
           browserHistory.push("/article/" + result.data)
@@ -93,7 +80,42 @@ class SomeArticleElements extends Component {
       });
     }
   };
-
+  changeValue=(targetId)=>{
+    let newarticle={};
+      if(targetId=="title"){
+         newarticle= Object.assign({}, this.state.article);
+        newarticle.title=this.refs.title.value;
+        this.setState({
+          article:  newarticle
+        })
+      }else if(targetId=="overview"){
+        newarticle= Object.assign({}, this.state.article);
+        newarticle.overview=this.refs.overview.value;
+        this.setState({
+          article: newarticle
+        })
+      }
+      else if(targetId=="sortOne"){
+        for(let SortList of this.state.listSortList){
+          if(SortList.sort1.sortId==this.refs.sortOne.value){
+            newarticle= Object.assign({}, this.state.article);
+            newarticle.sortOne=this.refs.sortOne.value;
+            newarticle.sortTwo=SortList.sort2s[0].sortId;
+            this.setState({
+              sortTwos: SortList.sort2s,
+              article: newarticle
+            })
+          }
+        }
+      }
+      else if(targetId=="sortTwo"){
+        newarticle= Object.assign({}, this.state.article);
+        newarticle.sortTwo=this.refs.sortTwo.value;
+          this.setState({
+            article: newarticle
+          })
+      }else{}
+  };
   render() {
     return (
       <div >
@@ -103,22 +125,26 @@ class SomeArticleElements extends Component {
           <div className="control">
             <input className="input  is-medium" type="text" placeholder="标题" ref="title" id="title"
                    data-easytip="position:top;class:easy-black;disappear:1000;speed:1000;"
-                   data-easytip-message="请填写标题"/>
+                   data-easytip-message="请填写标题"
+                   value={this.state.article.title}
+                   onChange={()=>this.changeValue("title")}/>
           </div>
         </div>
         <div className="field">
           <div className="control">
             <textarea className="textarea is-medium" type="text" placeholder="概述" ref="overview" id="overview"
                       data-easytip="position:top;class:easy-black;disappear:1000;speed:1000;"
-                      data-easytip-message="请填写概述"/>
+                      data-easytip-message="请填写概述"
+                      value={this.state.article.overview}
+                      onChange={()=>this.changeValue("overview")}/>
           </div>
         </div>
         <div className="field">
           <div className="control">
             <div className="select">
-              <select ref="sortOne" onChange={this.getSortTwo}>
-                {this.state.sortOneList.map((sortOne)=> {
-                  return <option value={sortOne.sortId}>{sortOne.name}</option>
+              <select ref="sortOne" onChange={()=>this.changeValue("sortOne")}>
+                {this.state.listSortList.map((sortOne)=> {
+                  return <option value={sortOne.sort1.sortId} key={sortOne.sort1.sortId}>{sortOne.sort1.name}</option>
                 })}
               </select>
             </div>
@@ -126,9 +152,10 @@ class SomeArticleElements extends Component {
 
               <select ref="sortTwo" id="sortTwo"
                       data-easytip="position:right;class:easy-black;disappear:1000;speed:1000;"
-                      data-easytip-message="请选择分类">
-                {this.state.sortTwoList.map((sortTwo)=> {
-                  return <option value={sortTwo.sortId}>{sortTwo.name}</option>
+                      data-easytip-message="请选择分类"
+                      onChange={()=>this.changeValue("sortTwo")}>
+                {this.state.sortTwos.map((sortTwo)=> {
+                  return <option value={sortTwo.sortId} key={sortTwo.sortId}>{sortTwo.name}</option>
                 })}
               </select>
             </div>
@@ -157,7 +184,8 @@ class MarkDown extends Component {
     this.setState({reactMdeValue: value});
   };
   componentDidUpdate = ()=> {
-    $(this.refs.container).find("code").each(function (i, block) {
+    //refs万岁！！！
+    $(this.refs.ReactMde.preview).find("code").each(function (i, block) {
       Prism.highlightElement(block);
     });
   };
@@ -168,12 +196,13 @@ class MarkDown extends Component {
         <ReactMde
           textAreaProps={{
                         id: 'ta1',
-                        name: 'ta1',
+                        name: 'ta1'
                     }}
 
           value={this.state.reactMdeValue}
           onChange={this.handleValueChange}
-          commands={ReactMdeCommands.getDefaultCommands()}
+          ref= "ReactMde"
+          commands={ReactMdeCommands.getDefaultCommands() }
         />
       </div>
     );
