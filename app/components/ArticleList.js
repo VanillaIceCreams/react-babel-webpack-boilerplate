@@ -143,7 +143,7 @@ export default class ArticleListPage extends React.Component {
     return (
       <div>
         <ArticleList articles={this.state.articles}/>
-        <Page pageSize={this.state.pageSize} pageNum={this.state.pageNum} articleAmount={this.state.articleAmount}
+        <Page pageSize={this.state.pageSize} pageNum={this.state.pageNum} amount={this.state.articleAmount}
               handlePageChange={this.handlePageChange}/>
       </div>
     )
@@ -163,7 +163,7 @@ class ArticleList extends React.PureComponent {
                   <article className="media">
                     <div className="media-left">
                       <figure className="image is-64x64">
-                        <img src="https://bulma.io/images/placeholders/128x128.png" alt="Image"/>
+                        <img src={article.imageLarge}/>
                       </figure>
                     </div>
 
@@ -183,7 +183,6 @@ class ArticleList extends React.PureComponent {
               </div>
             )
           })}
-
       </div>
     );
   }

@@ -13,8 +13,10 @@ import  Navbar from './Navbar.js'
 import  WritingPage from './WritingPage.js'
 import  Manage from './Manage.js'
 import  AlterArticle from './AlterArticle.js'
+import  PictureManage from './PictureManage.js'
 ReactDOM.render(
-  <div>
+  <div >
+    <div id="aaa"></div>
     <Router history={browserHistory}>
       <Route path="/" component={Navbar}>
         <IndexRoute component={HomePage}/>
@@ -23,6 +25,7 @@ ReactDOM.render(
         <Route path="/markdown" component={ WritingPage}/>
         <Route path="/manage" component={Manage}/>
         <Route path="/alter/:articleId" component={AlterArticle}/>
+        <Route path="/picture" component={PictureManage}/>
       </Route>
     </Router>
     <Footer/>

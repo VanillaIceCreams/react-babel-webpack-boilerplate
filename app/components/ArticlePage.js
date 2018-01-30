@@ -8,78 +8,62 @@ import Review from './Review.js'
 import  '../css/mycss.css'
 import URL from './URL';
 
-export default class ArticlePage extends React.Component {
 
+export default class ArticlePage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {reviewList: []};
-  }
-
-  putReview = (review, reviewForm)=> {//reviewForm是子组件，用于提交成功后清空输入内容！
-    review.articleId = this.props.params.articleId;
-    $.ajax({
-      type: 'put',
-      contentType: 'application/json;charset=UTF-8',
-      dataType: "json",
-      url: URL.reviewUrl,
-      data: JSON.stringify(review),//必须是json格式！
-      success: (result)=> {
-        alert("评论成功");
-        this.getReviewList(URL.reviewUrl + this.props.params.articleId)
-        reviewForm.cleatInput();
-      },
-      error: (result)=> {
-        alert("服务器出错");
-      }
-    });
-  };
-
-  getReviewList(url) {
-    $.get(url, (result)=> {
-        if (result.status == 200) {
-          this.setState({
-            reviewList: result.data
-          })
-        }
-      }
-    )
+    this.state = {article: ""};
   }
 
   componentDidMount() {
-    this.getReviewList(URL.reviewUrl + this.props.params.articleId)
+    $.get(URL.articleURL + this.props.params.articleId, (result)=> {
+        this.setState({
+          article: result.data
+        })
+      }
+    )
   }
-
   render() {
     return (
       <div>
-        <ArticleTitle />
-        <Content articleId={this.props.params.articleId}/>
-        <Review reviewList={this.state.reviewList} putReview={this.putReview}/>
+        <ArticleTitle article ={this.state.article} />
+        <Content content={this.state.article.content}/>
+        <Review articleId={this.props.params.articleId}/>
         <GotoTop/>
       </div>
     );
   }
 }
-class Content extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {content: ""};
-  }
-
-
+class ArticleTitle extends React.PureComponent {
   componentDidMount() {
-    $.get(URL.articleURL + this.props.articleId, (result)=> {
-        this.setState({
-          content: result.data.content
-        })
-      }
-    )
+    $("#date").easytip();
   }
+
+  render() {
+    return (<div>
+      <h1 className="title">{this.props.article.title}</h1>
+      <div className="column">
+         <p><a  style={{ textDecoration:"none"}}>作　　者：香草丶</a></p>
+        <a data-easytip="position:bottom;class:easy-black;hover_show:true"
+           data-easytip-message={"最后编辑于"+new Date(this.props.article.updateTime).toLocaleString()}
+           id="date"
+           style={{ textDecoration:"none"}}>
+        <span>创建日期：</span>
+        <span >{new Date(this.props.article.createTime).toLocaleDateString()}</span>
+        </a>
+      </div>
+      <hr/>
+    </div>)
+  }
+
+}
+//文章的正文
+class Content extends React.PureComponent {
 
   render() {
     //dangerouslySetInnerHTML={{__html:值}}用于添加innerhtml
     return (
-      <div className="markdown-body" dangerouslySetInnerHTML={{__html:this.state.content}}></div>
+      <div className="markdown-body" dangerouslySetInnerHTML={{__html:this.props.content}}></div>
     );
   }
 }

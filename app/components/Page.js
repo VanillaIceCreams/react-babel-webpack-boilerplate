@@ -15,7 +15,7 @@ export default class Page extends React.PureComponent {
   //如果(当前页-1)>1,那么1...now-1,now
   //如果(当前页+1)<totalPage,那么now,now+1...totalPage
   render() {
-    let totalPage = Math.ceil(this.props.articleAmount / this.props.pageSize );
+    let totalPage = Math.ceil(this.props.amount / this.props.pageSize );
     let pre = [];
     let last = [];
 

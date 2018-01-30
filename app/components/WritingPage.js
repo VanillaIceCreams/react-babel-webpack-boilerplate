@@ -114,14 +114,27 @@ class SomeArticleElements extends Component {
           this.setState({
             article: newarticle
           })
+      }else if(targetId=="imageLarge"){
+        newarticle= Object.assign({}, this.state.article);
+        newarticle.imageLarge=this.refs.imageLarge.value;
+        this.setState({
+          article: newarticle
+        })
       }else{}
   };
   render() {
     return (
       <div >
-        {/*标题，总述，分类，提交，隐藏的ID*/}
+        {/*标题，总述，分类，提交，隐藏的ID imageLarge*/}
         <input className="input is-invisible" type="text" ref="atricleId" disabled/>
-        <div className="fid">
+        <div className="field">
+          <div className="control">
+            <input className="input  is-medium" type="text" placeholder="图片链接" ref="imageLarge" id="imageLarge"
+                   value={this.state.article.imageLarge}
+                   onChange={()=>this.changeValue("imageLarge")}/>
+          </div>
+        </div>
+        <div className="field">
           <div className="control">
             <input className="input  is-medium" type="text" placeholder="标题" ref="title" id="title"
                    data-easytip="position:top;class:easy-black;disappear:1000;speed:1000;"

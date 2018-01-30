@@ -4479,8 +4479,8 @@ a.box:active {
 }
 
 .image.is-64x64 {
-  height: 64px;
   width: 64px;
+  height: 64px;
 }
 
 .image.is-96x96 {

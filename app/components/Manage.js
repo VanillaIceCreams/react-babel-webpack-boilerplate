@@ -85,7 +85,7 @@ export default class ManageArticleList extends React.Component {
                 <article className="media">
                   <div className="media-left">
                     <figure className="image is-64x64">
-                      <img src="https://bulma.io/images/placeholders/128x128.png" alt="Image"/>
+                      <img src={article.imageLarge}/>
                     </figure>
                   </div>
                   <Link to={"/article/"+article.articleId} style={{width:"100%"}}>

@@ -192,7 +192,10 @@ class Logined extends React.PureComponent {
         </a>
         <div className="navbar-dropdown">
           <Link to="/manage" className="navbar-item">
-            后台管理
+            文章管理
+          </Link>
+          <Link to="/picture" className="navbar-item">
+            图片管理
           </Link>
           <a className="navbar-item" onClick={this.props.exit}>
             退出

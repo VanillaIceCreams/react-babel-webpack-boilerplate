@@ -112,7 +112,7 @@ class SomeArticleElements extends Component {
         data: JSON.stringify(this.state.article),//必须是json格式！
         success: (result)=> {
           alert("提交成功");
-          browserHistory.push("/article/" + result.data)
+          browserHistory.push("/manage")
         },
         error: (result)=> {
           alert("服务器出错");
@@ -154,6 +154,12 @@ class SomeArticleElements extends Component {
       this.setState({
         article: newarticle
       })
+    }else if(targetId=="imageLarge"){
+      newarticle= Object.assign({}, this.state.article);
+      newarticle.imageLarge=this.refs.imageLarge.value;
+      this.setState({
+        article: newarticle
+      })
     }else{}
   };
   render() {
@@ -161,7 +167,16 @@ class SomeArticleElements extends Component {
       <div >
         {/*标题，总述，分类，提交，隐藏的ID*/}
          <input className="input is-invisible" type="text" ref="atricleId" disabled/>
-        <div className="fid">
+
+        <div className="field">
+          <div className="control">
+            <input className="input  is-medium" type="text" placeholder="图片链接" ref="imageLarge" id="imageLarge"
+                   value={this.state.article.imageLarge}
+                   onChange={()=>this.changeValue("imageLarge")}/>
+          </div>
+        </div>
+
+        <div className="field">
           <div className="control">
             <input className="input  is-medium" type="text" placeholder="标题" ref="title" id="title"
                    data-easytip="position:top;class:easy-black;disappear:1000;speed:1000;"

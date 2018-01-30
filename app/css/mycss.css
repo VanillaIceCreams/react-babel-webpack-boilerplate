@@ -1,3 +1,34 @@
+/**{color:white !important;*/
+/*}*/
+/*a,Link{*/
+  /*text-decoration: none !important;*/
+/*}*/
+/*div{*/
+  /*background-color: transparent !important;*/
+/*}*/
+/*a.navbar-item:hover{*/
+  /*background-color: black !important;*/
+/*}*/
+/*#aaa{*/
+  /*background:no-repeat url("http://localhost:8080/image/e501f602-3ed0-4992-8a32-ffa2c093c351.jpg") ;*/
+  /*position: fixed;*/
+  /*top:0;*/
+  /*left:0;*/
+  /*height:100%;*/
+  /*width:100%;*/
+  /*background-position: center 0;*/
+  /*background-repeat: no-repeat;*/
+  /*background-attachment:fixed;*/
+  /*background-size: cover;*/
+  /*-webkit-background-size: cover;!* 兼容Webkit内核浏览器如Chrome和Safari *!*/
+  /*-o-background-size: cover;!* 兼容Opera *!*/
+  /*zoom: 1;*/
+/*}*/
+/*.image.is-64x64 {*/
+  /*width: 100px !important;*/
+/*}*/
+
+
 .GotoTop{
   display: block;
   opacity: .9;
