@@ -25,7 +25,7 @@ class OnloadModal extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {img64: ""};
-    this.f = {}//拖拽上来的文件存这里，方便ajax提交
+    this.f = {};//拖拽上来的文件存这里，方便ajax提交
   }
 
   componentDidMount() {
@@ -88,11 +88,28 @@ class OnloadModal extends React.PureComponent {
       }
     });
   };
+  switchDelete=(e)=>{
+    var deletes= $(".token");
+    if(e.target.innerText=="管理图片"){
+      deletes.removeClass("is-invisible");
+      e.target.innerText="退出管理";
+      $("#onloadButton").attr("disabled","true")
+    }else{
+      deletes.addClass("is-invisible");
+      e.target.innerText="管理图片";
+      $("#onloadButton").removeAttr("disabled")
+    }
 
+  }
   render() {
     return (
       <div>
-        <button onClick={this.switchModal} className="button is-danger is-large pull-right">上传图片</button>
+        <div>
+          <button onClick={this.switchModal} className="button is-danger is-large pull-right" id="onloadButton" >上传图片</button>
+          <div style={{clear:"both",marginTop:"10px"}}></div>
+          <button onClick={this.switchDelete} className="button is-danger is-large pull-right" >管理图片</button>
+        </div>
+
         <div className="modal" id="onloadModal">
           <div className="modal-background" onClick={this.switchModal}></div>
           <div className="modal-card">
@@ -140,15 +157,45 @@ class ImageList extends React.PureComponent {
       this.refs.bigImage.src  = url;
     }
   };
+  deleteImage=(e)=>{
+    var imageId =e.target.id;
+    $.ajax({
+      type: 'delete',
+      contentType: 'application/json;charset=UTF-8',
+      dataType: "json",
+      url: URL.imageURL,
+      data: imageId,
+      success: (result)=> {
+        if (result.status == 200) {
+          var newimages =  this.state.images.filter((image)=>{
+            if(image.imageId==imageId){
+              return false
+            }
+            return true;
+          });
+          this.setState({
+            images: newimages
+          });
 
+        }else{
+          alert("删除失败");
+        }
+      },
+      error: (result)=> {
+        alert("服务器出错");
+      }
+    });
+  };
   render() {
     return (<div>
+
       <div className="columns is-mobile is-multiline is-centered" id="imageContain">
         {
           this.state.images.map((image)=> {
             return (
               <div className="column is-narrow">
                 <figure className="image is-128x128">
+                  <a className={"delete pull-right token is-invisible" } id={image.imageId} onClick={this.deleteImage}/>
                   <a onClick={()=>this.switchImageModal(URL.imagePreURL+image.imageId)}><img src={URL.imagePreURL+image.imageId} /></a>
                 </figure>
               </div>)

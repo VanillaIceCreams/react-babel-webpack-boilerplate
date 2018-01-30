@@ -25,7 +25,7 @@ class ArticleList1 extends React.Component {
   }
 
   componentDidMount() {
-    $.get(URL.recentArticleURL+"?num=4", (result)=> {
+    $.get(URL.recentArticleURL+"?num=8", (result)=> {
         if (result.status == 200) {
           this.setState({
             articles: result.data
@@ -78,7 +78,7 @@ class RecentReview extends React.Component {
   }
 
   componentDidMount() {
-    $.get(URL.recentReviewURL+"?num=11", (result)=> {
+    $.get(URL.recentReviewURL+"?num=20", (result)=> {
         if (result.status == 200) {
           this.setState({
             reviews: result.data

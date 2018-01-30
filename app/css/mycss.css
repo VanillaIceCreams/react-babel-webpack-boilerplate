@@ -29,6 +29,18 @@
 /*}*/
 
 
+/*去除滚动条*/
+/*::-webkit-scrollbar {*/
+  /*width: 0px;*/
+/*}*/
+/*!*让column滚动*!*/
+/*.column{*/
+  /*max-height: 100vh;*/
+  /*overflow: auto;*/
+/*}*/
+/*html,body{*/
+  /*overflow: hidden;*/
+/*}*/
 .GotoTop{
   display: block;
   opacity: .9;
